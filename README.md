@@ -14,3 +14,5 @@
   - 是否显示拍摄按钮
   - 跳转到拍摄页面的Intent
 - 开始开发
+
+https://blog.csdn.net/lly347705530/article/details/79030268
