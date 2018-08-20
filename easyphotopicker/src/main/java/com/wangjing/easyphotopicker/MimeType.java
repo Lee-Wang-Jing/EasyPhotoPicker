@@ -3,6 +3,7 @@ package com.wangjing.easyphotopicker;
 import android.support.v4.util.ArraySet;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -75,5 +76,13 @@ public enum MimeType {
 
     private static Set<String> arraySetOf(String... suffixes) {
         return new ArraySet<>(Arrays.asList(suffixes));
+    }
+
+    public static Set<MimeType> ofImage() {
+        return EnumSet.of(JPEG, PNG, GIF, BMP, WEBP);
+    }
+
+    public static Set<MimeType> ofVideo() {
+        return EnumSet.of(MPEG, MP4, QUICKTIME, THREEGPP, THREEGPP2, MKV, WEBM, TS, AVI);
     }
 }
