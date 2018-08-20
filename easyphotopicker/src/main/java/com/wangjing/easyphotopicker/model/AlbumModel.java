@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContentResolverCompat;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 相册数据查询处理
@@ -18,38 +23,61 @@ public class AlbumModel {
      * 数据源
      */
     private static final Uri QUERY_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    private static final String PROJECTION = MediaStore.Files.FileColumns.MEDIA_TYPE;
+    private static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";
 
-    private String selection = MediaStore.Images.Media.MIME_TYPE + "=? or "
-            + MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?";
+    private static final String[] PROJECTION = {
+            MediaStore.Files.FileColumns._ID,
+            MediaStore.MediaColumns.DISPLAY_NAME,
+            MediaStore.MediaColumns.MIME_TYPE,
+            MediaStore.MediaColumns.SIZE};
 
-    // === params for showSingleMediaType: false ===
-    private static final String SELECTION =
+    // === params for album ALL && showSingleMediaType: false ===
+    private static final String SELECTION_ALL =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
-                    + " AND " + MediaStore.MediaColumns.SIZE + ">0"
-                    + ") GROUP BY (bucket_id";
+                    + " AND " + MediaStore.MediaColumns.SIZE + ">0";
+    private static final String[] SELECTION_ALL_ARGS = {
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+            String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO),
+    };
+    // ===========================================================
+
 
 //    private WeakReference<Context> mContext;
 
 
     public interface AlbumCallbacks {
-        void onAlbumSuc();
+        void onAlbumSuc(List<String> allAlbums);
     }
 
 
     private AlbumCallbacks mCallbacks;
 
 
-    public void getAlbums(FragmentActivity fragmentActivity, AlbumCallbacks albumCallbacks) {
+    public static void getAlbums(FragmentActivity fragmentActivity, AlbumCallbacks albumCallbacks) {
 //        mContext = new WeakReference<Context>(fragmentActivity);
+        List<String> allAlbums = new ArrayList<>();
 
         //TODO ContentResolverCompat 和 ContentResolver   https://developer.android.com/reference/android/support/v4/content/ContentResolverCompat
+        // TODO ContentResolverCompat https://blog.csdn.net/Mr_Gintoki/article/details/50601094
         ContentResolver cr = fragmentActivity.getContentResolver();
         Cursor cursor = null;
+//        cursor = cr.query(QUERY_URI, PROJECTION, SELECTION_ALL, SELECTION_ALL_ARGS, ORDER_BY);
+        cursor = cr.query(QUERY_URI, PROJECTION, null, null, ORDER_BY);
+        if (cursor == null) {
+            //TODO null
+            albumCallbacks.onAlbumSuc(allAlbums);
+        }
+        while (cursor.moveToNext()) {
+            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+            allAlbums.add("" + path);
+        }
+        cursor.close();
+        if (albumCallbacks!=null){
+            albumCallbacks.onAlbumSuc(allAlbums);
+        }
 
-//        cursor = cr.query(QUERY_URI, PROJECTION, )
     }
 
 }

@@ -1,36 +1,35 @@
 package com.wangjing.easyphotopicker.presenter;
 
-import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.wangjing.easyphotopicker.base.BasePresenter;
-import com.wangjing.easyphotopicker.model.AlbumCollection;
+import com.wangjing.easyphotopicker.model.AlbumModel;
 import com.wangjing.easyphotopicker.myinterface.EasyPhotoActivityInterface;
 
-public class EasyPhotoActivityPresenter extends BasePresenter<EasyPhotoActivityInterface> implements AlbumCollection.AlbumCallbacks {
+import java.util.List;
+
+public class EasyPhotoActivityPresenter extends BasePresenter<EasyPhotoActivityInterface> implements AlbumModel.AlbumCallbacks {
     //EasyPhotoActivityInterface接口，代表了View接口角色
     private EasyPhotoActivityInterface mView;
-    private AlbumCollection mAlbumCollection;
 
 
     public EasyPhotoActivityPresenter(EasyPhotoActivityInterface easyPhotoActivityInterface) {
         mView = easyPhotoActivityInterface;
     }
 
-    public void getData() {
-        if (mAlbumCollection == null) {
-            mAlbumCollection = new AlbumCollection();
-        }
+    public void getData(FragmentActivity fragmentActivity) {
         mView.showLoading();
+        AlbumModel.getAlbums(fragmentActivity, this);
     }
 
-    @Override
-    public void onAlbumLoad(Cursor cursor) {
-
-    }
 
     @Override
-    public void onAlbumReset() {
-
+    public void onAlbumSuc(List<String> allAlbums) {
+        if (allAlbums != null && !allAlbums.isEmpty()) {
+            for (int i = 0; i < allAlbums.size(); i++) {
+                Log.e("path", "" + allAlbums.get(i));
+            }
+        }
     }
 }

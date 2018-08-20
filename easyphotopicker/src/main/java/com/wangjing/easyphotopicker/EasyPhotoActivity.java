@@ -1,8 +1,6 @@
 package com.wangjing.easyphotopicker;
 
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 
 import com.wangjing.easyphotopicker.base.BaseMvpActivity;
@@ -15,6 +13,7 @@ public class EasyPhotoActivity extends BaseMvpActivity<EasyPhotoActivityInterfac
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_easyphoto);
+        mPresenter.getData(this);
     }
 
     @Override
