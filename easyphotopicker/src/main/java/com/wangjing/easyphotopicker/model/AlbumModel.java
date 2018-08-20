@@ -59,8 +59,8 @@ public class AlbumModel {
 //        mContext = new WeakReference<Context>(fragmentActivity);
         List<String> allAlbums = new ArrayList<>();
 
-        //TODO ContentResolverCompat 和 ContentResolver   https://developer.android.com/reference/android/support/v4/content/ContentResolverCompat
-        // TODO ContentResolverCompat https://blog.csdn.net/Mr_Gintoki/article/details/50601094
+        // TODO https://blog.csdn.net/zhanwei0102/article/details/53009506?locationNum=4&fps=1
+        // TODO 理解PROJECTION  SELECTION  SELECTION_ARGS
         ContentResolver cr = fragmentActivity.getContentResolver();
         Cursor cursor = null;
 //        cursor = cr.query(QUERY_URI, PROJECTION, SELECTION_ALL, SELECTION_ALL_ARGS, ORDER_BY);
