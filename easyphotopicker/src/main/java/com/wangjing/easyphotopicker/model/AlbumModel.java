@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContentResolverCompat;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -26,12 +25,28 @@ public class AlbumModel {
     private static final String ORDER_BY = MediaStore.Images.Media.DATE_TAKEN + " DESC";
 
     private static final String[] PROJECTION = {
-            MediaStore.Files.FileColumns._ID,
+            MediaStore.MediaColumns._ID,
             MediaStore.MediaColumns.DISPLAY_NAME,
             MediaStore.MediaColumns.MIME_TYPE,
-            MediaStore.MediaColumns.SIZE};
+            MediaStore.MediaColumns.DATA,
+    };
+    private static final String SELECTION_IMAGE =
+            "(" +
+                    MediaStore.Images.Media.MIME_TYPE + "=?"
+                    + " OR " +
+                    MediaStore.Images.Media.MIME_TYPE + "=?)"
+                    + " AND "
+                    + MediaStore.MediaColumns.SIZE + ">0";
+
 
     // === params for album ALL && showSingleMediaType: false ===
+    private static final String SELECTION_ALL2 =
+
+            "(" + MediaStore.MediaColumns.MIME_TYPE + "=?"
+                    + " OR "
+                    + MediaStore.MediaColumns.MIME_TYPE + "=?)"
+                    + " AND " + MediaStore.MediaColumns.SIZE + ">0";
+
     private static final String SELECTION_ALL =
             "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                     + " OR "
@@ -55,6 +70,62 @@ public class AlbumModel {
     private AlbumCallbacks mCallbacks;
 
 
+    /**
+     * 获取查询图片的Selection
+     *
+     * @param isShowCommenImage 是否查询普通图片
+     * @param isShowGif         是否查询Gif图片
+     * @return Selection String
+     */
+    private String getSelection_Image(boolean isShowCommenImage, boolean isShowGif) {
+        int type = 0;
+        if (isShowCommenImage && !isShowGif) {//只查询普通图片(jpg、png)
+            type = 1;
+        } else if (!isShowCommenImage && isShowGif) {//只查询Gif
+            type = 2;
+        } else if (isShowCommenImage && isShowGif) {//查询普通图片和Gif
+            type = 3;
+        } else {//都不查询
+            type = 4;
+        }
+        String selectiom_image = null;
+        switch (type) {
+            case 1:
+                selectiom_image = "(" +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?"
+                        + " OR " +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?)"
+                        + " AND "
+                        + MediaStore.MediaColumns.SIZE + ">0";
+                break;
+            case 2:
+                selectiom_image = "(" +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?)"
+                        + " AND "
+                        + MediaStore.MediaColumns.SIZE + ">0";
+                break;
+            case 3:
+                selectiom_image = "(" +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?"
+                        + " OR " +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?"
+                        + " OR " +
+                        MediaStore.MediaColumns.MIME_TYPE + "=?)"
+                        + " AND "
+                        + MediaStore.MediaColumns.SIZE + ">0";
+                break;
+            case 4:
+                selectiom_image = null;
+                break;
+            default:
+                selectiom_image = null;
+                break;
+        }
+
+        return selectiom_image;
+    }
+
+
     public static void getAlbums(FragmentActivity fragmentActivity, AlbumCallbacks albumCallbacks) {
 //        mContext = new WeakReference<Context>(fragmentActivity);
         List<String> allAlbums = new ArrayList<>();
@@ -70,11 +141,15 @@ public class AlbumModel {
             albumCallbacks.onAlbumSuc(allAlbums);
         }
         while (cursor.moveToNext()) {
-            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+            String path = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
+            String mime_type = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
+            String display_name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+            Log.e("mime_type", "" + mime_type);
+            Log.e("display_name", "" + display_name);
             allAlbums.add("" + path);
         }
         cursor.close();
-        if (albumCallbacks!=null){
+        if (albumCallbacks != null) {
             albumCallbacks.onAlbumSuc(allAlbums);
         }
 
