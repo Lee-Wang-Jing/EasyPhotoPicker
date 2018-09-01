@@ -31,5 +31,6 @@ public class EasyPhotoActivityPresenter extends BasePresenter<EasyPhotoActivityI
                 Log.e("path", "" + allAlbums.get(i));
             }
         }
+        mView.showData(allAlbums);
     }
 }
