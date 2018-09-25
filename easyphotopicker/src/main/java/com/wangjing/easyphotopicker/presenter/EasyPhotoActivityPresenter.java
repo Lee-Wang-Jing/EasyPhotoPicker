@@ -16,6 +16,7 @@ public class EasyPhotoActivityPresenter extends BasePresenter<EasyPhotoActivityI
 
     public EasyPhotoActivityPresenter(EasyPhotoActivityInterface easyPhotoActivityInterface) {
         mView = easyPhotoActivityInterface;
+        this.attachView(easyPhotoActivityInterface);
     }
 
     public void getData(FragmentActivity fragmentActivity) {
